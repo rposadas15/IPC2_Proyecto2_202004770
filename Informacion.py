@@ -1,0 +1,45 @@
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+class Informacion(object):
+    def setupUi(self, Form2):
+        Form2.setObjectName("Form2")
+        Form2.resize(719, 240)
+        Form2.setStyleSheet("background-color: rgb(0, 0, 0);")
+        self.centralwidget = QtWidgets.QWidget(Form2)
+        self.centralwidget.setObjectName("centralwidget")
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(30, 20, 341, 16))
+        self.label.setStyleSheet("font: 87 12pt \"Arial Black\";\ncolor: rgb(255, 255, 0);")
+        self.label.setObjectName("label")
+        self.label_2 = QtWidgets.QLabel(self.centralwidget)
+        self.label_2.setGeometry(QtCore.QRect(30, 60, 131, 16))
+        self.label_2.setStyleSheet("font: 87 12pt \"Arial Black\";\ncolor: rgb(255, 255, 0);")
+        self.label_2.setObjectName("label_2")
+        self.label_3 = QtWidgets.QLabel(self.centralwidget)
+        self.label_3.setGeometry(QtCore.QRect(30, 100, 651, 21))
+        self.label_3.setStyleSheet("font: 87 12pt \"Arial Black\";\ncolor: rgb(255, 255, 0);")
+        self.label_3.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft)
+        self.label_3.setObjectName("label_3")
+        self.label_4 = QtWidgets.QLabel(self.centralwidget)
+        self.label_4.setGeometry(QtCore.QRect(30, 150, 381, 21))
+        self.label_4.setStyleSheet("font: 87 12pt \"Arial Black\";\ncolor: rgb(255, 255, 0);")
+        self.label_4.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft)
+        self.label_4.setObjectName("label_4")
+        self.label_5 = QtWidgets.QLabel(self.centralwidget)
+        self.label_5.setGeometry(QtCore.QRect(30, 200, 171, 21))
+        self.label_5.setStyleSheet("font: 87 12pt \"Arial Black\";\ncolor: rgb(255, 255, 0);")
+        self.label_5.setObjectName("label_5")
+        self.statusbar = QtWidgets.QStatusBar(Form2)
+        self.statusbar.setObjectName("statusbar")
+
+        self.retranslateUi(Form2)
+        QtCore.QMetaObject.connectSlotsByName(Form2)
+    
+    def retranslateUi(self, Form2):
+        _translate = QtCore.QCoreApplication.translate
+        Form2.setWindowTitle(_translate("Form2", "Informacion Estudiante"))
+        self.label.setText(_translate("Form2", "Ronaldo Javier Posadas Guerra"))
+        self.label_2.setText(_translate("Form2", "202004770"))
+        self.label_3.setText(_translate("Form2", "Introduccion a la Programacion y Computacion 2 Seccion A"))
+        self.label_4.setText(_translate("Form2", "Ingenieria en Ciencias y Sistemas"))
+        self.label_5.setText(_translate("Form2", "4to Semestre"))
