@@ -1,6 +1,27 @@
+from typing import List, Text
+import xml.etree.ElementTree as ET
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QMessageBox, QFileDialog
+
 from Informacion import Informacion
+from Productos import LineasDeProduccion
+from Productos import ObtenerProductos
+from Productos import FabricarProductos
+
+from ListaProductos import ListaProductos
+ListaDeProductos = ListaProductos()
+
+from ListaNormal import ListaNormal
+ComponentesC = ListaNormal()
+ListaLineasProduccion = ListaNormal()
+ListaDeMovimientos = ListaNormal()
+Productos = ListaNormal()
+HacerProductosArchivo =  ListaNormal()
+
+from ConfigLineas import ListaConfigLineas
+ConfiguracionLineas = ListaConfigLineas()
+
 import sys
 
 class Interfaz(object):
@@ -43,8 +64,9 @@ class Interfaz(object):
         self.label.setFont(font)
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setObjectName("label")
-        self.listView = QtWidgets.QListView(self.groupBox_2)
+        self.listView = QtWidgets.QLabel(self.groupBox_2)
         self.listView.setGeometry(QtCore.QRect(20, 100, 341, 191))
+        self.listView.setStyleSheet("border-style: solid;\nborder-width: 5px;\nborder-color: rgb(0, 0, 127);")
         font = QtGui.QFont()
         font.setFamily("Arial Black")
         font.setPointSize(12)
@@ -52,6 +74,8 @@ class Interfaz(object):
         font.setWeight(75)
         self.listView.setFont(font)
         self.listView.setObjectName("listView")
+        pixmap = QPixmap('Maquina.jpg')
+        self.listView.setPixmap(pixmap)
         self.label_2 = QtWidgets.QLabel(self.groupBox_2)
         self.label_2.setGeometry(QtCore.QRect(20, 70, 121, 21))
         font = QtGui.QFont()
@@ -62,7 +86,7 @@ class Interfaz(object):
         self.label_2.setFont(font)
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
-        self.verticalScrollBar = QtWidgets.QScrollBar(self.groupBox_2)
+        '''self.verticalScrollBar = QtWidgets.QScrollBar(self.groupBox_2)
         self.verticalScrollBar.setGeometry(QtCore.QRect(330, 110, 20, 171))
         font = QtGui.QFont()
         font.setFamily("Arial Black")
@@ -71,7 +95,7 @@ class Interfaz(object):
         font.setWeight(75)
         self.verticalScrollBar.setFont(font)
         self.verticalScrollBar.setOrientation(QtCore.Qt.Vertical)
-        self.verticalScrollBar.setObjectName("verticalScrollBar")
+        self.verticalScrollBar.setObjectName("verticalScrollBar")'''
         self.pushButton = QtWidgets.QPushButton(Form)
         self.pushButton.setGeometry(QtCore.QRect(10, 10, 141, 51))
         font = QtGui.QFont()
@@ -83,7 +107,7 @@ class Interfaz(object):
         self.pushButton.setStyleSheet("border-style: solid;\nborder-width: 5px;\nborder-color: rgb(0, 0, 127);")
         self.pushButton.setObjectName("pushButton")
         self.pushButton_2 = QtWidgets.QPushButton(Form)
-        self.pushButton_2.setGeometry(QtCore.QRect(170, 10, 191, 51))
+        self.pushButton_2.setGeometry(QtCore.QRect(175, 10, 191, 51))
         font = QtGui.QFont()
         font.setFamily("Arial Black")
         font.setPointSize(10)
@@ -93,7 +117,7 @@ class Interfaz(object):
         self.pushButton_2.setStyleSheet("border-style: solid;\nborder-width: 5px;\nborder-color: rgb(0, 0, 127);")
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_3 = QtWidgets.QPushButton(Form)
-        self.pushButton_3.setGeometry(QtCore.QRect(390, 10, 191, 51))
+        self.pushButton_3.setGeometry(QtCore.QRect(10, 390, 191, 40))
         font = QtGui.QFont()
         font.setFamily("Arial Black")
         font.setPointSize(10)
@@ -103,7 +127,7 @@ class Interfaz(object):
         self.pushButton_3.setStyleSheet("border-style: solid;\nborder-width: 5px;\nborder-color: rgb(0, 0, 127);")
         self.pushButton_3.setObjectName("pushButton_3")
         self.pushButton_4 = QtWidgets.QPushButton(Form)
-        self.pushButton_4.setGeometry(QtCore.QRect(600, 10, 151, 51))
+        self.pushButton_4.setGeometry(QtCore.QRect(390, 10, 191, 51))
         font = QtGui.QFont()
         font.setFamily("Arial Black")
         font.setPointSize(10)
@@ -113,7 +137,7 @@ class Interfaz(object):
         self.pushButton_4.setStyleSheet("border-style: solid;\nborder-width: 5px;\nborder-color: rgb(0, 0, 127);")
         self.pushButton_4.setObjectName("pushButton_4")
         self.pushButton_5 = QtWidgets.QPushButton(Form)
-        self.pushButton_5.setGeometry(QtCore.QRect(770, 10, 81, 51))
+        self.pushButton_5.setGeometry(QtCore.QRect(600, 10, 151, 51))
         font = QtGui.QFont()
         font.setFamily("Arial Black")
         font.setPointSize(10)
@@ -122,8 +146,28 @@ class Interfaz(object):
         self.pushButton_5.setFont(font)
         self.pushButton_5.setStyleSheet("border-style: solid;\nborder-width: 5px;\nborder-color: rgb(0, 0, 127);")
         self.pushButton_5.setObjectName("pushButton_5")
+        self.pushButton_6 = QtWidgets.QPushButton(Form)
+        self.pushButton_6.setGeometry(QtCore.QRect(770, 10, 81, 51))
+        font = QtGui.QFont()
+        font.setFamily("Arial Black")
+        font.setPointSize(10)
+        font.setBold(True)
+        font.setWeight(75)
+        self.pushButton_6.setFont(font)
+        self.pushButton_6.setStyleSheet("border-style: solid;\nborder-width: 5px;\nborder-color: rgb(0, 0, 127);")
+        self.pushButton_6.setObjectName("pushButton_6")
+        self.pushButton_7 = QtWidgets.QPushButton(Form)
+        self.pushButton_7.setGeometry(QtCore.QRect(522, 390, 112, 40))
+        font = QtGui.QFont()
+        font.setFamily("Arial Black")
+        font.setPointSize(10)
+        font.setBold(True)
+        font.setWeight(75)
+        self.pushButton_7.setFont(font)
+        self.pushButton_7.setStyleSheet("border-style: solid;\nborder-width: 5px;\nborder-color: rgb(0, 0, 127);")
+        self.pushButton_7.setObjectName("pushButton_7")
         self.comboBox = QtWidgets.QComboBox(Form)
-        self.comboBox.setGeometry(QtCore.QRect(10, 390, 250, 35))
+        self.comboBox.setGeometry(QtCore.QRect(210, 390, 220, 40))
         font = QtGui.QFont()
         font.setFamily("Arial Black")
         font.setPointSize(10)
@@ -132,20 +176,115 @@ class Interfaz(object):
         self.comboBox.setFont(font)
         self.comboBox.setStyleSheet("border-style: solid;\nborder-width: 5px;\nborder-color: rgb(0, 0, 127);")
         self.comboBox.setObjectName("comboBox")
-        self.comboBox.addItem('Seleccione un Producto')
+        self.comboBox.addItem('Seleccione Producto')
+        self.comboBox_2 = QtWidgets.QComboBox(Form)
+        self.comboBox_2.setGeometry(QtCore.QRect(640, 390, 210, 40))
+        font = QtGui.QFont()
+        font.setFamily("Arial Black")
+        font.setPointSize(10)
+        font.setBold(True)
+        font.setWeight(75)
+        self.comboBox_2.setFont(font)
+        self.comboBox_2.setStyleSheet("border-style: solid;\nborder-width: 5px;\nborder-color: rgb(0, 0, 127);")
+        self.comboBox_2.setObjectName("comboBox_2")
+        self.comboBox_2.addItem('Seleccione Reporte')
 
         self.retranslateUi(Form)
         self.pushButton.clicked.connect(self.ConfigurarMaquina)
-        #self.pushButton_2.clicked.connect(self.)
-        #self.pushButton_3.clicked.connect(self.)
-        self.pushButton_4.clicked.connect(self.Informacion)
-        self.pushButton_5.clicked.connect(self.Salir)
+        self.pushButton_2.clicked.connect(self.CargarProductos)
+        self.pushButton_3.clicked.connect(self.CrearProducto)
+        self.pushButton_4.clicked.connect(self.CrearTodosLosProductos)
+        self.pushButton_5.clicked.connect(self.Informacion)
+        self.pushButton_6.clicked.connect(self.Salir)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def ConfigurarMaquina(self):
-        QMessageBox.about(Form, "Title", "Message")
+        buscar = QFileDialog.getOpenFileName(filter="Archivo (*.xml)")[0]
+        mytree = ET.parse(buscar)
+        myroot = mytree.getroot()
+
+        for x in myroot:
+            for j in x:
+                for a1 in j.findall('Numero'):
+                    for a2 in j.findall('CantidadComponentes'):
+                        for a3 in j.findall('TiempoEnsamblaje'):
+                            ConfiguracionLineas.Insertar(int(a1.text), int(a2.text), int(a3.text))
+
+        aux = ConfiguracionLineas.Primero
+        while aux != None:
+            max = aux.Ncomponentes
+            ListaPrueba = ListaNormal()
+            for columnas in range(1, (max + 1)):
+                ListaPrueba.Insertar('C' + str(columnas))
+            ComponentesC.Insertar(ListaPrueba)
+            ListaPrueba = ListaNormal()
+            aux = aux.siguiente
+        
+        aux2 = ConfiguracionLineas.Primero
+        aux3 = ComponentesC.Primero
+        while aux2 != None:            
+            ListaLineasProduccion.Insertar(LineasDeProduccion(aux3.objeto, aux2.tiempo, ('L' + str(aux2.numero)), ListaNormal(), 1, ''))
+            aux2 = aux2.siguiente
+            aux3 = aux3.siguiente
+
+        for x in myroot:
+            for j in x:
+                for b1 in j.findall('nombre'):
+                    for b2 in j.findall('elaboracion'):
+                        ListaDeProductos.Insertar(b1.text, b2.text)
+
+        aux4 = ListaDeProductos.Primero
+        while aux4 != None:
+            self.comboBox.addItem(aux4.nombre)
+            Movimientos = ListaNormal()
+            elaborar = aux4.elaboracion
+            elaborar += ' '
+            temporal = ''
+            for a in elaborar:
+                if a == ' ':                    
+                    Movimientos.Insertar(temporal)
+                    temporal = ''
+                else:
+                    temporal += a
+            ListaDeMovimientos.Insertar(Movimientos)
+            Movimientos = ListaNormal()
+            aux4 = aux4.siguiente
+
+        aux5 = ListaDeProductos.Primero
+        aux6 = ListaDeMovimientos.Primero
+        while aux5 != None:
+            Productos.Insertar(ObtenerProductos(aux5.nombre, aux6.objeto))
+            aux5 = aux5.siguiente
+
+    def CargarProductos(self):
+        buscar = QFileDialog.getOpenFileName(filter="Archivo (*.xml)")[0]
+        mytree = ET.parse(buscar)
+        myroot2 = mytree.getroot()
+
+        ProductosArchivo = ListaNormal()
+
+        for x in myroot2:
+            for j in x:
+                ProductosArchivo.Insertar(j.text)        
+        
+        for x in myroot2.findall('Nombre'):            
+            HacerProductosArchivo.Insertar(FabricarProductos(x.text, ProductosArchivo))
+
+        #self.comboBox.addItem('-----')
+        '''aux = HacerProductosArchivo.Primero
+        while aux != None:
+            aux.objeto.getProductos().ComboBox(self.comboBox)
+            aux = aux.siguiente'''
+
+    def CrearProducto(self):
+        selec = self.comboBox.currentText()
+        
+
+    def CrearTodosLosProductos(self):
+        print('B4')
 
     def Informacion(self):
+        print('B5')
         self.Form2 = QtWidgets.QWidget()
         self.ui2 = Informacion()
         self.ui2.setupUi(self.Form2)
@@ -160,13 +299,14 @@ class Interfaz(object):
         self.groupBox.setTitle(_translate("Form", "PROCESO"))
         self.groupBox_2.setTitle(_translate("Form", "PRODUCTO"))
         self.label.setText(_translate("Form", "NOMBRE"))
-        self.label_2.setText(_translate("Form", "COMPONENTES"))
+        self.label_2.setText(_translate("Form", "Maquinaria"))
         self.pushButton.setText(_translate("Form", "CONFIGURAR\nMAQUINA"))
-        self.pushButton_2.setText(_translate("Form", "CREAR PRODUCTO"))
-        self.pushButton_3.setText(_translate("Form", "CREAR TODOS LOS\nPRODUCTOS"))
-        self.pushButton_4.setText(_translate("Form", "INFORMACION"))
-        self.pushButton_5.setText(_translate("Form", "SALIR"))
-
+        self.pushButton_2.setText(_translate("Form", "CARGAR TODOS \nLOS PRODUCTOS"))
+        self.pushButton_3.setText(_translate("Form", "CREAR PRODUCTO"))
+        self.pushButton_4.setText(_translate("Form", "CREAR TODOS LOS\nPRODUCTOS"))
+        self.pushButton_5.setText(_translate("Form", "INFORMACION"))
+        self.pushButton_6.setText(_translate("Form", "SALIR"))
+        self.pushButton_7.setText(_translate("Form", "REPORTES"))
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
