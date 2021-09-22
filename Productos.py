@@ -1,12 +1,10 @@
 class LineasDeProduccion:
 
-    def __init__(self, ListaC, tiempo, ListaL, proceso, totaltiempoProduccion, exceso):
+    def __init__(self, ListaC, tiempo, ListaL):#, sobrante):
         self.ListaC = ListaC
         self.tiempo = tiempo
         self.ListaL = ListaL
-        self.proceso = proceso
-        self.totaltiempoProduccion = totaltiempoProduccion
-        self.exceso = exceso
+        #self.sobrante = sobrante
 
     #Get
     def getListaC(self):
@@ -18,14 +16,8 @@ class LineasDeProduccion:
     def getListaL(self):
         return self.ListaL
 
-    def getProceso(self):
-        return self.proceso
-
-    def getTotaltiempoProduccion(self):
-        return self.totaltiempoProduccion
-
-    def getExceso(self):
-        return self.exceso
+    #def getSobrante(self):
+    #    return self.sobrante
 
     #Set
     def setListaC(self, ListaC):
@@ -37,20 +29,16 @@ class LineasDeProduccion:
     def setListaL(self, ListaL):
         self.ListaL = ListaL
 
-    def setProceso(self, proceso):
-        self.proceso = proceso
-
-    def setTotaltiempoProduccion(self, totaltiempoProduccion):
-        self.totaltiempoProduccion += totaltiempoProduccion
-
-    def setExceso(self, exceso):
-        self.exceso = exceso
+    #def setSobrante(self, sobrante):
+    #    self.sobrante = sobrante
 
 class ObtenerProductos:
 
-    def __init__(self, nombre, elaboracion):
+    def __init__(self, nombre, elaboracion, proceso, tiempo):
         self.nombre = nombre        
         self.elaboracion = elaboracion
+        self.proceso = proceso
+        self.tiempo = tiempo
 
     #Get
     def getNombre(self):
@@ -59,12 +47,24 @@ class ObtenerProductos:
     def getElaboracion(self):
         return self.elaboracion
 
+    def getProceso(self):
+        return self.proceso
+
+    def getTiempo(self):
+        return self.tiempo
+
     #Set
     def setNombre(self, nombre):
         self.nombre = nombre
 
     def setElaboracion(self, elaboracion):
         self.elaboracion = elaboracion
+
+    def setProceso(self, proceso):
+        self.proceso = proceso
+
+    def setTiempo(self, tiempo):
+        self.tiempo = tiempo
 
 class FabricarProductos:
 

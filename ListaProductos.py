@@ -24,6 +24,6 @@ class ListaProductos:
 
     def Mostrar(self):
         aux = self.Primero
-        while aux:
+        while aux != None:
             print(aux.nombre, aux.elaboracion)
             aux = aux.siguiente

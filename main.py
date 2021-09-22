@@ -1,4 +1,3 @@
-from typing import List, Text
 import xml.etree.ElementTree as ET
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QIcon, QPixmap
@@ -12,6 +11,7 @@ from Productos import FabricarProductos
 from ListaProductos import ListaProductos
 ListaDeProductos = ListaProductos()
 
+from ListaNormal import ListaNormal2
 from ListaNormal import ListaNormal
 ComponentesC = ListaNormal()
 ListaLineasProduccion = ListaNormal()
@@ -22,7 +22,7 @@ HacerProductosArchivo =  ListaNormal()
 from ConfigLineas import ListaConfigLineas
 ConfiguracionLineas = ListaConfigLineas()
 
-import sys
+import sys, os
 
 class Interfaz(object):
     def setupUi(self, Form):
@@ -86,16 +86,6 @@ class Interfaz(object):
         self.label_2.setFont(font)
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
-        '''self.verticalScrollBar = QtWidgets.QScrollBar(self.groupBox_2)
-        self.verticalScrollBar.setGeometry(QtCore.QRect(330, 110, 20, 171))
-        font = QtGui.QFont()
-        font.setFamily("Arial Black")
-        font.setPointSize(12)
-        font.setBold(True)
-        font.setWeight(75)
-        self.verticalScrollBar.setFont(font)
-        self.verticalScrollBar.setOrientation(QtCore.Qt.Vertical)
-        self.verticalScrollBar.setObjectName("verticalScrollBar")'''
         self.pushButton = QtWidgets.QPushButton(Form)
         self.pushButton.setGeometry(QtCore.QRect(10, 10, 141, 51))
         font = QtGui.QFont()
@@ -223,7 +213,7 @@ class Interfaz(object):
         aux2 = ConfiguracionLineas.Primero
         aux3 = ComponentesC.Primero
         while aux2 != None:            
-            ListaLineasProduccion.Insertar(LineasDeProduccion(aux3.objeto, aux2.tiempo, ('L' + str(aux2.numero)), ListaNormal(), 1, ''))
+            ListaLineasProduccion.Insertar(LineasDeProduccion(aux3.objeto, aux2.tiempo, ('L' + str(aux2.numero))))#, ''))
             aux2 = aux2.siguiente
             aux3 = aux3.siguiente
 
@@ -253,8 +243,11 @@ class Interfaz(object):
         aux5 = ListaDeProductos.Primero
         aux6 = ListaDeMovimientos.Primero
         while aux5 != None:
-            Productos.Insertar(ObtenerProductos(aux5.nombre, aux6.objeto))
+            Productos.Insertar(ObtenerProductos(aux5.nombre, aux6.objeto, ListaNormal2(), 1))
             aux5 = aux5.siguiente
+            aux6 = aux6.siguiente
+
+        return ListaLineasProduccion, Productos
 
     def CargarProductos(self):
         buscar = QFileDialog.getOpenFileName(filter="Archivo (*.xml)")[0]
@@ -264,21 +257,167 @@ class Interfaz(object):
         ProductosArchivo = ListaNormal()
 
         for x in myroot2:
-            for j in x:
+            for j in x:                
                 ProductosArchivo.Insertar(j.text)        
         
         for x in myroot2.findall('Nombre'):            
             HacerProductosArchivo.Insertar(FabricarProductos(x.text, ProductosArchivo))
 
-        #self.comboBox.addItem('-----')
-        '''aux = HacerProductosArchivo.Primero
-        while aux != None:
-            aux.objeto.getProductos().ComboBox(self.comboBox)
-            aux = aux.siguiente'''
+        return HacerProductosArchivo
 
-    def CrearProducto(self):
-        selec = self.comboBox.currentText()
-        
+    def CrearProducto(self, nombre):
+        nombre = self.comboBox.currentText()
+        aux = Productos.Primero
+        while aux != None:
+            if nombre == aux.objeto.getNombre():
+                movimientos = aux.objeto.getProceso()
+                proceso = aux.objeto.getElaboracion()
+            aux = aux.siguiente
+
+        t = 1
+        lasL = ListaLineasProduccion.Primero
+        proc = proceso.Primero
+        lineaposicion = 1
+        tiempoespera = 0
+
+        while proc != None:
+            while lasL != None:
+
+                lasC = lasL.objeto.getListaC().Primero
+                t = lasL.objeto.getTiempo()
+                if lasL.anterior != None:
+                    tt = lasL.anterior.objeto.getTiempo()
+                else:
+                    tt = 0
+                
+                while lasC != None:
+                    
+                    if (str(lasL.objeto.getListaL()) + str(lasC.objeto)) == proc.objeto:
+                        movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Mover a: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                        #print('se movio a', lasL.objeto.getListaL(), lasC.objeto, lasL.objeto.getTiempo())
+                        
+                        if lineaposicion == 1:
+                            tiempoespera = 0                            
+                        elif lineaposicion <= proceso.Tamaño:
+                            if proceso.Tamaño - lineaposicion == 1:
+                                tiempoespera = -1                                
+                            elif lineaposicion == proceso.Tamaño:
+                                tiempoespera = int(lasL.objeto.getTiempo())
+                            else:
+                                tiempoespera = int(lasL.objeto.getTiempo())
+
+                        if tiempoespera > 0:                           
+                            if proc.objeto[-1] > proc.anterior.objeto[-1]:
+                                if lineaposicion == proceso.Tamaño:
+                                    if t > tt:
+                                        t += 1
+                                        movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Esperar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                                        t += int(lasL.objeto.getTiempo())
+                                        movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                                    else:
+                                        t += int(lasL.objeto.getTiempo())
+                                        movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                                else:
+                                    t += int(lasL.objeto.getTiempo())
+                                    movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                            elif proc.objeto[-1] < proc.anterior.objeto and t > tt:
+                                t += 1
+                                movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Esperar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                                t += int(lasL.objeto.getTiempo())
+                                movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                            else:
+                                if proc.objeto[-1] < proc.anterior.objeto and lineaposicion == proceso.Tamaño:
+                                    t += 1
+                                    movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Esperar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                                    t += int(lasL.objeto.getTiempo())
+                                    movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                                else:
+                                    t += int(lasL.objeto.getTiempo())
+                                    movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                        elif tiempoespera == -1:
+                            t += int(lasL.objeto.getTiempo())
+                            movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                            t += 1
+                            movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Esperar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                        else:
+                            t += int(lasL.objeto.getTiempo())
+                            movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+
+                        
+                        lasL.objeto.setTiempo(t)
+                        #print(proc.objeto[0] + str(int(proc.objeto[1])))
+                        #extra = proc.objeto[-2] + str(int(proc.objeto[-1]) + 1)
+                        #print(extra)
+                        #lasL.objeto.setSobrante(extra)
+
+                        break
+                    else:
+                        bandera = ListaNormal2()                        
+                        if proc.objeto.find(lasL.objeto.getListaL()) != -1:
+                            #print(lasL.objeto.getListaL(), lasC.objeto, proc.objeto.find(lasL.objeto.getListaL()))
+                            bandera.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Mover a: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                            if movimientos.Tamaño == 0:
+                                #print('se movio a', lasL.objeto.getListaL(), lasC.objeto, lasL.objeto.getTiempo())
+                                movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Mover a: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                                t += 1
+                            else:
+                                auxiliar = bandera.Primero
+                                while auxiliar != None:                                    
+                                    if auxiliar.C.find(lasC.objeto) == -1:                                        
+                                        movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Mover a: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                                        t += 1
+                                    auxiliar = auxiliar.siguiente
+                                
+                    lasC = lasC.siguiente
+                lasL = lasL.siguiente
+            lasL = ListaLineasProduccion.Primero
+            lineaposicion += 1
+            proc = proc.siguiente
+
+        lineaposicion = 1
+        t = 1
+        proc = Productos.Primero     
+        aux = Productos.Primero
+
+        #self.Grapho(nombre)
+
+        movimientos.Mostrar()
+        print('--')
+        proceso.Mostrar()
+        print('--')
+        self.Grapho(nombre)
+
+    def Grapho(self, nombre):
+        aux = Productos.Primero
+        while aux != None:
+            if aux.objeto.getNombre() == nombre:
+                proceso = aux.objeto.getElaboracion()
+            aux = aux.siguiente
+
+        archivo = open(nombre + '.dot', 'w')
+        archivo.write('digraph ' + nombre + ' { ')
+        archivo.write( 'bgcolor = "#0000FF" \n')
+        archivo.write(  'node[shape = "circle" fillcolor = "#FFFF00" style = filled] \n')
+        archivo.write(  'fontsize = "20" \n')
+        archivo.write('label = ' + nombre + '\n')
+
+        proc = proceso.Primero
+        while proc != None:
+            if proc.siguiente != None:
+                archivo.write('rank = same { ' + proc.objeto + '->' + proc.siguiente.objeto + ' }\n')
+            proc = proc.siguiente
+
+        archivo.write('}')
+        archivo.close()
+        os.system('cmd /c "dot.exe -Tpng ' + (nombre + '.dot') + ' -o ' + (nombre + '.png') + '"')
+        os.startfile(nombre + '.png')
+
+    def XML(self, nombre):
+        aux = Productos.Primero
+        while aux != None:
+            if aux.objeto.getNombre() == nombre:
+                proceso = aux.objeto.getProceso()
+            aux = aux.siguiente
 
     def CrearTodosLosProductos(self):
         print('B4')

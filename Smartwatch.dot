@@ -1,0 +1,8 @@
+digraph Smartwatch { bgcolor = "#0000FF" 
+node[shape = "circle" fillcolor = "#FFFF00" style = filled] 
+fontsize = "20" 
+label = Smartwatch
+rank = same { L1C2->L2C1 }
+rank = same { L2C1->L2C2 }
+rank = same { L2C2->L1C4 }
+}

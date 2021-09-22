@@ -25,6 +25,6 @@ class ListaConfigLineas:
 
     def Mostrar(self):        
         aux = self.Primero
-        while aux:
+        while aux != None:
             print(aux.numero, aux.Ncomponentes, aux.tiempo)
             aux = aux.siguiente
