@@ -1,10 +1,9 @@
 class LineasDeProduccion:
 
-    def __init__(self, ListaC, tiempo, ListaL):#, sobrante):
+    def __init__(self, ListaC, tiempo, ListaL):
         self.ListaC = ListaC
         self.tiempo = tiempo
         self.ListaL = ListaL
-        #self.sobrante = sobrante
 
     #Get
     def getListaC(self):
@@ -16,9 +15,6 @@ class LineasDeProduccion:
     def getListaL(self):
         return self.ListaL
 
-    #def getSobrante(self):
-    #    return self.sobrante
-
     #Set
     def setListaC(self, ListaC):
         self.ListaC = ListaC
@@ -28,9 +24,6 @@ class LineasDeProduccion:
 
     def setListaL(self, ListaL):
         self.ListaL = ListaL
-
-    #def setSobrante(self, sobrante):
-    #    self.sobrante = sobrante
 
 class ObtenerProductos:
 

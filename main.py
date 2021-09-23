@@ -185,6 +185,7 @@ class Interfaz(object):
         self.pushButton_3.clicked.connect(self.CrearProducto)
         self.pushButton_4.clicked.connect(self.CrearTodosLosProductos)
         self.pushButton_5.clicked.connect(self.Informacion)
+        self.pushButton_7.clicked.connect(self.VerReporte)
         self.pushButton_6.clicked.connect(self.Salir)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -272,14 +273,15 @@ class Interfaz(object):
             if nombre == aux.objeto.getNombre():
                 movimientos = aux.objeto.getProceso()
                 proceso = aux.objeto.getElaboracion()
+                tiempo = aux.objeto
             aux = aux.siguiente
 
-        t = 1
-        lasL = ListaLineasProduccion.Primero
-        proc = proceso.Primero
+        t = 1        
         lineaposicion = 1
         tiempoespera = 0
 
+        lasL = ListaLineasProduccion.Primero
+        proc = proceso.Primero
         while proc != None:
             while lasL != None:
 
@@ -293,78 +295,75 @@ class Interfaz(object):
                 while lasC != None:
                     
                     if (str(lasL.objeto.getListaL()) + str(lasC.objeto)) == proc.objeto:
-                        movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Mover a: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                        movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Mover a: ' + str(lasC.objeto), t)
                         #print('se movio a', lasL.objeto.getListaL(), lasC.objeto, lasL.objeto.getTiempo())
                         
                         if lineaposicion == 1:
-                            tiempoespera = 0                            
+                            tiempoespera = 0
                         elif lineaposicion <= proceso.Tamaño:
                             if proceso.Tamaño - lineaposicion == 1:
-                                tiempoespera = -1                                
+                                tiempoespera = -1
                             elif lineaposicion == proceso.Tamaño:
                                 tiempoespera = int(lasL.objeto.getTiempo())
                             else:
                                 tiempoespera = int(lasL.objeto.getTiempo())
 
-                        if tiempoespera > 0:                           
+                        if tiempoespera > 0:
                             if proc.objeto[-1] > proc.anterior.objeto[-1]:
                                 if lineaposicion == proceso.Tamaño:
                                     if t > tt:
                                         t += 1
-                                        movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Esperar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                                        movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Esperar: ' + str(lasC.objeto), t)
                                         t += int(lasL.objeto.getTiempo())
-                                        movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                                        movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + str(lasC.objeto), t)
                                     else:
                                         t += int(lasL.objeto.getTiempo())
-                                        movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                                        movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + str(lasC.objeto), t)
                                 else:
                                     t += int(lasL.objeto.getTiempo())
-                                    movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                                    movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + str(lasC.objeto), t)
                             elif proc.objeto[-1] < proc.anterior.objeto and t > tt:
                                 t += 1
-                                movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Esperar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                                movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Esperar: ' + str(lasC.objeto), t)
                                 t += int(lasL.objeto.getTiempo())
-                                movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                                movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + str(lasC.objeto), t)
                             else:
                                 if proc.objeto[-1] < proc.anterior.objeto and lineaposicion == proceso.Tamaño:
                                     t += 1
-                                    movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Esperar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                                    movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Esperar: ' + str(lasC.objeto), t)
                                     t += int(lasL.objeto.getTiempo())
-                                    movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                                    movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + str(lasC.objeto), t)
                                 else:
                                     t += int(lasL.objeto.getTiempo())
-                                    movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                                    movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + str(lasC.objeto), t)
                         elif tiempoespera == -1:
                             t += int(lasL.objeto.getTiempo())
-                            movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                            movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + str(lasC.objeto), t)
                             t += 1
-                            movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Esperar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                            movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Esperar: ' + str(lasC.objeto), t)
                         else:
                             t += int(lasL.objeto.getTiempo())
-                            movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                            movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Ensamblar: ' + str(lasC.objeto), t)
 
-                        
                         lasL.objeto.setTiempo(t)
-                        #print(proc.objeto[0] + str(int(proc.objeto[1])))
-                        #extra = proc.objeto[-2] + str(int(proc.objeto[-1]) + 1)
-                        #print(extra)
-                        #lasL.objeto.setSobrante(extra)
+                        tiempo.setTiempo(t)
 
                         break
                     else:
                         bandera = ListaNormal2()                        
                         if proc.objeto.find(lasL.objeto.getListaL()) != -1:
                             #print(lasL.objeto.getListaL(), lasC.objeto, proc.objeto.find(lasL.objeto.getListaL()))
-                            bandera.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Mover a: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                            bandera.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Mover a: ' +  str(lasC.objeto), t)
                             if movimientos.Tamaño == 0:
                                 #print('se movio a', lasL.objeto.getListaL(), lasC.objeto, lasL.objeto.getTiempo())
-                                movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Mover a: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                                movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Mover a: ' + str(lasC.objeto), t)
                                 t += 1
                             else:
                                 auxiliar = bandera.Primero
                                 while auxiliar != None:                                    
-                                    if auxiliar.C.find(lasC.objeto) == -1:                                        
-                                        movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Mover a: ' + (str(lasL.objeto.getListaL()) + str(lasC.objeto)) + ' en el Tiempo' + str(t), t)
+                                    if auxiliar.C.find(lasC.objeto) == -1:
+                                        #print('se movio a', lasL.objeto.getListaL(), lasC.objeto, lasL.objeto.getTiempo())
+                                        movimientos.Insertar(lasL.objeto.getListaL(), lasC.objeto, 'Mover a: ' + str(lasC.objeto), t)
                                         t += 1
                                     auxiliar = auxiliar.siguiente
                                 
@@ -374,18 +373,13 @@ class Interfaz(object):
             lineaposicion += 1
             proc = proc.siguiente
 
-        lineaposicion = 1
-        t = 1
-        proc = Productos.Primero     
-        aux = Productos.Primero
-
-        #self.Grapho(nombre)
-
-        movimientos.Mostrar()
-        print('--')
         proceso.Mostrar()
         print('--')
+        movimientos.Mostrar()
+        print('--')        
         self.Grapho(nombre)
+        self.HTML(nombre)
+        self.XML_UNO(nombre)
 
     def Grapho(self, nombre):
         aux = Productos.Primero
@@ -395,7 +389,7 @@ class Interfaz(object):
             aux = aux.siguiente
 
         archivo = open(nombre + '.dot', 'w')
-        archivo.write('digraph ' + nombre + ' { ')
+        archivo.write('digraph ' + nombre + ' { \n')
         archivo.write( 'bgcolor = "#0000FF" \n')
         archivo.write(  'node[shape = "circle" fillcolor = "#FFFF00" style = filled] \n')
         archivo.write(  'fontsize = "20" \n')
@@ -404,22 +398,98 @@ class Interfaz(object):
         proc = proceso.Primero
         while proc != None:
             if proc.siguiente != None:
-                archivo.write('rank = same { ' + proc.objeto + '->' + proc.siguiente.objeto + ' }\n')
+                archivo.write('rank = max {' + proc.objeto + '->' + proc.siguiente.objeto + '}\n')
             proc = proc.siguiente
 
         archivo.write('}')
         archivo.close()
         os.system('cmd /c "dot.exe -Tpng ' + (nombre + '.dot') + ' -o ' + (nombre + '.png') + '"')
-        os.startfile(nombre + '.png')
+        self.comboBox_2.addItem(nombre + '.png')        
 
-    def XML(self, nombre):
+    def XML_UNO(self, nombre):
         aux = Productos.Primero
         while aux != None:
             if aux.objeto.getNombre() == nombre:
                 proceso = aux.objeto.getProceso()
+                time = aux.objeto.getTiempo()
             aux = aux.siguiente
 
-    def CrearTodosLosProductos(self):
+        root = ET.Element('SalidaSimulacion')
+        doc1 = ET.SubElement(root, "Nombre")
+        doc1.text = 'Maquina'
+        doc2 = ET.SubElement(root, 'ListadoProductos')
+        doc3 = ET.SubElement(doc2, 'Producto')
+        doc4 = ET.SubElement(doc3, 'Nombre')
+        doc4.text = nombre
+        doc5 = ET.SubElement(doc3, 'TiempoTotal')
+        doc5.text = str(time)
+        doc6 = ET.SubElement(doc3, 'ElaboracionOptima')
+        
+        t = 1
+        proc = proceso.Primero
+        while t < time + 1:
+            nodo1 = ET.SubElement(doc6, 'Tiempo', NoSegundo = str(t))
+            nodo2 = ET.SubElement(nodo1, 'LineaEnsamblaje', NoLinea = proc.L)
+            nodo3 = ET.SubElement(nodo1, 'LineaEnsamblaje', NoLinea = proc.siguiente.L)
+            nodo2.text = proc.frase
+            nodo3.text = proc.siguiente.frase
+            t +=1
+            proc = proc.siguiente
+
+        arbol = ET.ElementTree(root)
+        arbol.write(nombre + '.xml')
+
+        t = 1
+        self.comboBox_2.addItem(nombre + '.xml')
+
+    def HTML(self, nombre):
+        aux = Productos.Primero
+        while aux != None:
+            if aux.objeto.getNombre() == nombre:
+                proceso = aux.objeto.getProceso()
+            aux = aux.siguiente        
+
+        f = open(nombre + '.html', 'w')
+
+        datos = """<html>
+            
+            <head>        
+                <link href="css/style.css" rel="stylesheet">
+
+                <h2>-Reporte del Producto</h2>
+            </head>
+            <body>
+
+                <h4>El nombre del producto es: """ + nombre + """</h4>
+
+                <table class="steelBlueCols">
+                    <thead>
+                        <tr>
+                            <th scope="col">Linea</th>           
+                            <th scope="col">Componente</th>
+                            <th scope="col">Accion</th>
+                            <th scope="col">Tiempo</th>
+                        </tr>
+                    </thead>"""
+        proc = proceso.Primero
+        while proc != None:
+            datos += '<tr><td>' + str(proc.L) + '</td><td>' + str(proc.C) + '</td><td>' + str(proc.frase) + '</td><td>' + str(proc.tiempo) + '</td><tr>'
+            #print(proc.L, proc.C, proc.frase, proc.tiempo)
+            #print('--')
+            proc = proc.siguiente
+        """</table>
+        </body>
+        </html>"""
+
+        f.write(datos)
+        f.close()
+        self.comboBox_2.addItem(nombre + '.html')
+
+    def VerReporte(self):
+        archivo = self.comboBox_2.currentText()
+        os.startfile(archivo)
+
+    def CrearTodosLosProductos(self):#Pendiente
         print('B4')
 
     def Informacion(self):
