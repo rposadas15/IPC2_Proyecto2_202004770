@@ -27,12 +27,6 @@ class ListaNormal:
             print(aux.objeto)
             aux = aux.siguiente
 
-    def ComboBox(self, comboBox):
-        aux = self.Primero
-        while aux != None:
-            comboBox.addItem(aux.objeto)
-            aux = aux.siguiente
-
 class NodoListaNormal2:
 
     def __init__(self, L, C, frase, tiempo):
